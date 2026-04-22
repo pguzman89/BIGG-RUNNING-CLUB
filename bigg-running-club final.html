@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>BIGG Running Club — Propuesta Estratégica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --lime: #d9ff63;
+  --lime2: #c8f040;
+  --black: #080808;
+  --white: #f5f5f0;
+  --gray: #8a8a82;
+  --panel: #111111;
+  --border: rgba(217,255,99,0.15);
+}
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: 'DM Sans', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── CURSOR ── */
+#cursor {
+  width: 12px; height: 12px;
+  background: var(--lime);
+  border-radius: 50%;
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease, background 0.3s ease;
+  mix-blend-mode: difference;
+}
+#cursor.expand { width: 40px; height: 40px; }
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.028;
+  pointer-events: none;
+  z-index: 9000;
+}
+
+/* ── LOADER ── */
+#loader {
+  position: fixed; inset: 0;
+  background: var(--black);
+  z-index: 8000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 24px;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+#loader.hidden { opacity: 0; visibility: hidden; }
+.loader-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(60px, 10vw, 120px);
+  letter-spacing: 0.1em;
+  color: var(--white);
+  overflow: hidden;
+}
+.loader-text span {
+  display: inline-block;
+  animation: loaderReveal 0.8s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  transform: translateY(100%);
+}
+.loader-text span:nth-child(1) { animation-delay: 0.1s; }
+.loader-text span:nth-child(2) { animation-delay: 0.2s; }
+.loader-text span:nth-child(3) { animation-delay: 0.3s; }
+.loader-text span:nth-child(4) { animation-delay: 0.4s; color: var(--lime); }
+@keyframes loaderReveal {
+  to { transform: translateY(0); }
+}
+.loader-bar {
+  width: 200px; height: 2px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.loader-bar-fill {
+  height: 100%;
+  background: var(--lime);
+  border-radius: 2px;
+  animation: loaderFill 1.8s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+}
+@keyframes loaderFill { from { width: 0% } to { width: 100% } }
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 20px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
+}
+nav.scrolled {
+  background: rgba(8,8,8,0.92);
+  backdrop-filter: blur(20px);
+  border-color: var(--border);
+}
+.nav-brand {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.12em;
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.nav-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--lime);
+  box-shadow: 0 0 12px var(--lime);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 8px var(--lime); transform: scale(1); }
+  50% { box-shadow: 0 0 20px var(--lime); transform: scale(1.3); }
+}
+.nav-links {
+  display: flex; gap: 32px;
+  list-style: none;
+}
+.nav-links a {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gray);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--lime); }
+
+/* ── HERO ── */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 48px 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 80% 20%, rgba(217,255,99,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 10% 80%, rgba(217,255,99,0.04) 0%, transparent 50%),
+    linear-gradient(180deg, #0a0a0a 0%, #060606 100%);
+}
+
+.hero-grid-lines {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(217,255,99,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(217,255,99,0.03) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+}
+
+.hero-counter {
+  position: absolute;
+  top: 50%;
+  right: 48px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 20px;
+  opacity: 0;
+  animation: fadeInRight 1s ease 2.4s forwards;
+}
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateY(-50%) translateX(20px); }
+  to { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+.counter-item { text-align: right; }
+.counter-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 42px;
+  color: var(--lime);
+  line-height: 1;
+  letter-spacing: 0.05em;
+}
+.counter-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+
+.hero-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--lime);
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 2s forwards;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.hero-eyebrow::before {
+  content: '';
+  display: block;
+  width: 40px; height: 1px;
+  background: var(--lime);
+}
+
+h1.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(80px, 13vw, 200px);
+  line-height: 0.88;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  opacity: 0;
+  animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 2.1s forwards;
+}
+h1.hero-title .accent { color: var(--lime); }
+
+.hero-sub {
+  margin-top: 28px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  opacity: 0;
+  animation: fadeUp 0.8s ease 2.3s forwards;
+}
+.hero-desc {
+  max-width: 480px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: rgba(245,245,240,0.6);
+  font-weight: 300;
+}
+.hero-cta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.btn-primary {
+  background: var(--lime);
+  color: var(--black);
+  border: none;
+  padding: 16px 36px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  cursor: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(217,255,99,0.4);
+}
+.scroll-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gray);
+}
+.scroll-arrow {
+  width: 1px; height: 50px;
+  background: linear-gradient(to bottom, var(--lime), transparent);
+  animation: scrollArrow 1.8s ease-in-out infinite;
+}
+@keyframes scrollArrow {
+  0%, 100% { transform: scaleY(1); opacity: 1; }
+  50% { transform: scaleY(0.6); opacity: 0.5; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── TICKER ── */
+.ticker-wrap {
+  background: var(--lime);
+  padding: 14px 0;
+  overflow: hidden;
+  position: relative;
+}
+.ticker-track {
+  display: flex;
+  gap: 0;
+  animation: tickerScroll 25s linear infinite;
+  width: max-content;
+}
+.ticker-item {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.15em;
+  color: var(--black);
+  white-space: nowrap;
+  padding-right: 48px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.ticker-item::after {
+  content: '✦';
+  font-size: 10px;
+}
+@keyframes tickerScroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ── SECTIONS GENERAL ── */
+section {
+  padding: 120px 48px;
+}
+.section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--lime);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-label::before {
+  content: '';
+  display: block;
+  width: 30px; height: 1px;
+  background: var(--lime);
+}
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(48px, 6vw, 90px);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  margin-bottom: 24px;
+}
+.section-title .accent { color: var(--lime); }
+.section-desc {
+  max-width: 600px;
+  font-size: 16px;
+  line-height: 1.7;
+  color: rgba(245,245,240,0.55);
+  font-weight: 300;
+  margin-bottom: 64px;
+}
+
+/* ── REVEAL ANIMATION ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ── STATS STRIP ── */
+#stats {
+  padding: 80px 48px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+.stat-item {
+  padding: 40px;
+  border-right: 1px solid var(--border);
+  text-align: center;
+}
+.stat-item:last-child { border-right: none; }
+.stat-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 72px;
+  color: var(--lime);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  display: block;
+}
+.stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-top: 8px;
+  display: block;
+}
+.stat-sub {
+  font-size: 13px;
+  color: rgba(245,245,240,0.4);
+  margin-top: 6px;
+  font-weight: 300;
+}
+
+/* ── MARKET SECTION ── */
+#mercado {
+  background: linear-gradient(180deg, var(--black) 0%, #0d0d0d 100%);
+}
+.trends-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-top: 60px;
+}
+.trend-card {
+  background: var(--panel);
+  padding: 36px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s ease;
+}
+.trend-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 2px;
+  background: var(--lime);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+.trend-card:hover { background: #161616; }
+.trend-card:hover::before { transform: scaleX(1); }
+.trend-number {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--lime);
+  letter-spacing: 0.1em;
+  margin-bottom: 20px;
+  opacity: 0.7;
+}
+.trend-icon { font-size: 32px; margin-bottom: 16px; }
+.trend-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px;
+  letter-spacing: 0.05em;
+  color: var(--white);
+  margin-bottom: 12px;
+  line-height: 1.1;
+}
+.trend-desc {
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(245,245,240,0.5);
+  font-weight: 300;
+}
+.trend-tag {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 6px 14px;
+  background: rgba(217,255,99,0.1);
+  border: 1px solid rgba(217,255,99,0.2);
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--lime);
+}
+
+/* ── GAP / COMPARISON ── */
+#gap {
+  background: #0a0a0a;
+}
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 1fr;
+  gap: 2px;
+  margin-top: 60px;
+}
+.comp-col {
+  padding: 48px 36px;
+  background: var(--panel);
+  position: relative;
+}
+.comp-col.featured {
+  background: var(--lime);
+  transform: scaleY(1.015);
+  z-index: 2;
+}
+.comp-col-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 20px;
+}
+.comp-col.featured .comp-col-label { color: rgba(8,8,8,0.5); }
+.comp-col-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 34px;
+  letter-spacing: 0.05em;
+  color: var(--white);
+  margin-bottom: 32px;
+  line-height: 1.05;
+}
+.comp-col.featured .comp-col-title { color: var(--black); }
+.comp-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 14px;
+  color: rgba(245,245,240,0.6);
+}
+.comp-col.featured .comp-item { border-color: rgba(0,0,0,0.1); color: rgba(8,8,8,0.7); }
+.comp-item .ci { font-size: 14px; flex-shrink: 0; }
+.comp-badge {
+  margin-top: 32px;
+  display: inline-block;
+  background: var(--black);
+  color: var(--lime);
+  padding: 10px 20px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border-radius: 2px;
+}
+
+/* ── PRODUCTO ── */
+#producto {
+  background: var(--black);
+}
+.product-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: start;
+}
+.pillar-list { display: flex; flex-direction: column; gap: 2px; }
+.pillar-item {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 0;
+  background: var(--panel);
+  overflow: hidden;
+  transition: background 0.3s;
+}
+.pillar-item:hover { background: #161616; }
+.pillar-num {
+  background: var(--lime);
+  color: var(--black);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.pillar-content { padding: 24px 28px; }
+.pillar-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.05em;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+.pillar-desc { font-size: 13px; line-height: 1.6; color: var(--gray); }
+
+.product-right { padding-top: 0; }
+.product-system {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 40px;
+  position: sticky;
+  top: 100px;
+}
+.system-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 0.1em;
+  color: var(--lime);
+  margin-bottom: 32px;
+  text-align: center;
+}
+.system-cycle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-bottom: 32px;
+}
+.cycle-node {
+  background: #1a1a1a;
+  padding: 24px;
+  text-align: center;
+  transition: background 0.3s;
+}
+.cycle-node:hover { background: #222; }
+.cycle-node:nth-child(1) { background: rgba(217,255,99,0.1); }
+.cycle-emoji { font-size: 28px; margin-bottom: 8px; }
+.cycle-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+.weekly-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+.day-node {
+  padding: 16px;
+  background: rgba(255,255,255,0.04);
+  text-align: center;
+}
+.day-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 0.1em;
+  color: var(--lime);
+}
+.day-type { font-size: 11px; color: var(--gray); margin-top: 4px; }
+
+/* ── PRECIOS ── */
+#precios {
+  background: #050505;
+  border-top: 1px solid var(--border);
+}
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-top: 60px;
+}
+.price-card {
+  background: var(--panel);
+  padding: 48px 36px;
+  position: relative;
+  overflow: hidden;
+}
+.price-card.featured {
+  background: var(--lime);
+}
+.price-tier {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gray);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.price-card.featured .price-tier { color: rgba(8,8,8,0.5); }
+.price-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 38px;
+  letter-spacing: 0.05em;
+  color: var(--white);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.price-card.featured .price-name { color: var(--black); }
+.price-amount {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 80px;
+  color: var(--lime);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  margin-bottom: 4px;
+}
+.price-card.featured .price-amount { color: var(--black); }
+.price-period {
+  font-size: 13px;
+  color: var(--gray);
+  margin-bottom: 32px;
+}
+.price-card.featured .price-period { color: rgba(8,8,8,0.5); }
+.price-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin-bottom: 28px;
+}
+.price-card.featured .price-divider { background: rgba(0,0,0,0.15); }
+.price-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  color: rgba(245,245,240,0.65);
+}
+.price-card.featured .price-feature { color: rgba(8,8,8,0.75); }
+.price-feature .pf-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--lime);
+  flex-shrink: 0;
+  margin-top: 7px;
+}
+.price-card.featured .price-feature .pf-dot { background: var(--black); }
+.featured-badge {
+  position: absolute;
+  top: 0; right: 0;
+  background: var(--black);
+  color: var(--lime);
+  padding: 8px 16px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* ── EVENTO ── */
+#evento {
+  background: var(--black);
+}
+.route-strip {
+  margin-top: 64px;
+  position: relative;
+  padding: 48px 0;
+}
+.route-line-visual {
+  position: absolute;
+  top: 50%;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--lime) 10%, var(--lime) 90%, transparent);
+  transform: translateY(-50%);
+}
+.route-stops {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 24px;
+  position: relative;
+  z-index: 2;
+}
+.route-stop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.stop-dot {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--black);
+  border: 3px solid var(--lime);
+  margin-bottom: 20px;
+  box-shadow: 0 0 20px rgba(217,255,99,0.5);
+  flex-shrink: 0;
+}
+.route-stop:last-child .stop-dot {
+  background: var(--lime);
+  box-shadow: 0 0 30px rgba(217,255,99,0.8);
+}
+.stop-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--lime);
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+.stop-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 0.08em;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+.stop-role {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lime);
+  margin-bottom: 8px;
+}
+.stop-desc {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--gray);
+  max-width: 160px;
+}
+
+.evento-bottom {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-top: 48px;
+}
+.evento-card {
+  background: var(--panel);
+  padding: 36px;
+}
+.evento-card-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px;
+  letter-spacing: 0.05em;
+  color: var(--lime);
+  margin-bottom: 20px;
+}
+.evento-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.evento-list li {
+  font-size: 14px;
+  color: rgba(245,245,240,0.65);
+  padding-left: 20px;
+  position: relative;
+  line-height: 1.5;
+}
+.evento-list li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 8px;
+  width: 6px; height: 1px;
+  background: var(--lime);
+}
+
+/* ── ROADMAP ── */
+#roadmap {
+  background: #050505;
+  border-top: 1px solid var(--border);
+}
+.roadmap-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-top: 64px;
+}
+.phase-card {
+  padding: 48px 36px;
+  background: var(--panel);
+  position: relative;
+  overflow: hidden;
+}
+.phase-card:nth-child(1) { background: rgba(217,255,99,0.06); border: 1px solid rgba(217,255,99,0.15); }
+.phase-card:nth-child(2) { background: #141414; }
+.phase-card:nth-child(3) { background: #0a0a0a; }
+.phase-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--lime);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.phase-period {
+  font-size: 10px;
+  color: var(--gray);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+.phase-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 42px;
+  letter-spacing: 0.03em;
+  color: var(--white);
+  line-height: 1;
+  margin-bottom: 32px;
+}
+.phase-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: rgba(245,245,240,0.6);
+  line-height: 1.5;
+}
+.phase-item-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--lime);
+  flex-shrink: 0;
+  margin-top: 8px;
+}
+
+/* ── NEGOCIO ── */
+#negocio {
+  background: var(--black);
+}
+.biz-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin-top: 64px;
+}
+.biz-card {
+  background: var(--panel);
+  padding: 40px;
+}
+.biz-card.dark { background: #0d0d0d; }
+.biz-card-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--lime);
+  margin-bottom: 20px;
+}
+.biz-card-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 0.05em;
+  color: var(--white);
+  margin-bottom: 24px;
+}
+.biz-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.biz-list li {
+  font-size: 15px;
+  color: rgba(245,245,240,0.65);
+  padding-left: 20px;
+  position: relative;
+  line-height: 1.5;
+}
+.biz-list li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 9px;
+  width: 8px; height: 1px;
+  background: var(--lime);
+}
+
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  margin-top: 2px;
+}
+.kpi-card {
+  background: var(--panel);
+  padding: 28px;
+}
+.kpi-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--lime);
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.kpi-item {
+  font-size: 13px;
+  color: var(--gray);
+  margin-bottom: 8px;
+  padding-left: 14px;
+  position: relative;
+  line-height: 1.4;
+}
+.kpi-item::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: rgba(217,255,99,0.4);
+  font-size: 10px;
+}
+
+/* ── CLOSING ── */
+#cierre {
+  background: var(--lime);
+  padding: 160px 48px;
+  position: relative;
+  overflow: hidden;
+}
+#cierre::before {
+  content: 'BIGG';
+  position: absolute;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 400px;
+  color: rgba(8,8,8,0.05);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  pointer-events: none;
+  letter-spacing: 0.02em;
+}
+.closing-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+}
+.closing-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(8,8,8,0.45);
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.closing-label::before {
+  content: '';
+  display: block;
+  width: 40px; height: 1px;
+  background: rgba(8,8,8,0.3);
+}
+.closing-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(56px, 8vw, 120px);
+  line-height: 0.92;
+  letter-spacing: 0.02em;
+  color: var(--black);
+  margin-bottom: 40px;
+}
+.closing-body {
+  font-size: 18px;
+  line-height: 1.7;
+  color: rgba(8,8,8,0.65);
+  font-weight: 300;
+  max-width: 680px;
+  margin-bottom: 48px;
+}
+.closing-points {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  max-width: 700px;
+}
+.closing-point {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(8,8,8,0.7);
+}
+.closing-point::before {
+  content: '✦';
+  font-size: 10px;
+  color: var(--black);
+  flex-shrink: 0;
+}
+.final-statement {
+  margin-top: 64px;
+  padding-top: 48px;
+  border-top: 1px solid rgba(8,8,8,0.15);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(22px, 3vw, 40px);
+  letter-spacing: 0.05em;
+  color: var(--black);
+  line-height: 1.3;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: #030303;
+  padding: 32px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border);
+}
+.footer-brand {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.15em;
+  color: var(--gray);
+}
+.footer-note {
+  font-size: 11px;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 0.05em;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  section { padding: 80px 28px; }
+  nav { padding: 16px 28px; }
+  #hero { padding: 0 28px 48px; }
+  .stats-grid, .trends-grid, .pricing-grid, .roadmap-grid { grid-template-columns: 1fr 1fr; }
+  .stats-grid .stat-item:nth-child(3) { border-right: 1px solid var(--border); }
+  .stats-grid .stat-item:nth-child(2n) { border-right: none; }
+  .comparison-grid { grid-template-columns: 1fr; }
+  .product-layout { grid-template-columns: 1fr; }
+  .route-stops { grid-template-columns: repeat(3, 1fr); }
+  .closing-points { grid-template-columns: 1fr; }
+  .biz-grid { grid-template-columns: 1fr; }
+  .kpi-strip { grid-template-columns: 1fr 1fr; }
+  .hero-counter { display: none; }
+  .nav-links { display: none; }
+  #cierre { padding: 100px 28px; }
+  footer { padding: 24px 28px; flex-direction: column; gap: 12px; text-align: center; }
+}
+@media (max-width: 640px) {
+  .stats-grid, .trends-grid, .pricing-grid, .roadmap-grid, .route-stops, .evento-bottom, .kpi-strip { grid-template-columns: 1fr; }
+  .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
+  .weekly-grid { grid-template-columns: repeat(3, 1fr); }
+  h1.hero-title { font-size: 68px; }
+  .hero-sub { flex-direction: column; gap: 24px; }
+  .comp-col.featured { transform: none; }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-text">
+    <span>B</span><span>I</span><span>G</span><span>G</span>
+  </div>
+  <div class="loader-bar"><div class="loader-bar-fill"></div></div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-brand">
+    <div class="nav-dot"></div>
+    BIGG Running Club
+  </div>
+  <ul class="nav-links">
+    <li><a href="#mercado">Mercado</a></li>
+    <li><a href="#producto">Producto</a></li>
+    <li><a href="#precios">Precios</a></li>
+    <li><a href="#evento">Evento</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-lines"></div>
+
+  <div class="hero-counter">
+    <div class="counter-item">
+      <div class="counter-num">4M+</div>
+      <div class="counter-label">Corredores ES</div>
+    </div>
+    <div class="counter-item">
+      <div class="counter-num">80%</div>
+      <div class="counter-label">Sin plan</div>
+    </div>
+    <div class="counter-item">
+      <div class="counter-num">2X</div>
+      <div class="counter-label">Crecimiento clubs</div>
+    </div>
+  </div>
+
+  <div class="hero-eyebrow">Propuesta estratégica 2025 · BIGG España</div>
+
+  <h1 class="hero-title">
+    BIGG<br>
+    <span class="accent">RUNNING</span><br>
+    CLUB
+  </h1>
+
+  <div class="hero-sub">
+    <p class="hero-desc">
+      De gimnasio premium a ecosistema de rendimiento. La oportunidad de liderar en Madrid la categoría que nadie ha resuelto bien: running estructurado, fuerza aplicada, comunidad y experiencia de marca.
+    </p>
+    <div class="hero-cta">
+      <a href="#mercado" class="btn-primary">Ver propuesta</a>
+      <div class="scroll-hint">
+        <span>Scroll</span>
+        <div class="scroll-arrow"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <div class="ticker-item">RUNNING PREMIUM</div>
+    <div class="ticker-item">SOCIAL RUN CULTURE</div>
+    <div class="ticker-item">COFFEE RAVE</div>
+    <div class="ticker-item">FUERZA APLICADA</div>
+    <div class="ticker-item">COMUNIDAD</div>
+    <div class="ticker-item">HYROX + RUNNING</div>
+    <div class="ticker-item">BIGG RACE TEAM</div>
+    <div class="ticker-item">MADRID</div>
+    <div class="ticker-item">RUNNING PREMIUM</div>
+    <div class="ticker-item">SOCIAL RUN CULTURE</div>
+    <div class="ticker-item">COFFEE RAVE</div>
+    <div class="ticker-item">FUERZA APLICADA</div>
+    <div class="ticker-item">COMUNIDAD</div>
+    <div class="ticker-item">HYROX + RUNNING</div>
+    <div class="ticker-item">BIGG RACE TEAM</div>
+    <div class="ticker-item">MADRID</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div id="stats">
+  <div class="stats-grid">
+    <div class="stat-item reveal">
+      <span class="stat-num">4M+</span>
+      <span class="stat-label">Corredores activos en España</span>
+      <div class="stat-sub">Crecimiento sostenido post-pandemia</div>
+    </div>
+    <div class="stat-item reveal reveal-delay-1">
+      <span class="stat-num">#3</span>
+      <span class="stat-label">Madrid en carreras populares EU</span>
+      <div class="stat-sub">Maratón, 10K Rock, San Silvestre…</div>
+    </div>
+    <div class="stat-item reveal reveal-delay-2">
+      <span class="stat-num">80%</span>
+      <span class="stat-label">Corredores sin plan estructurado</span>
+      <div class="stat-sub">El gap que BIGG puede liderar</div>
+    </div>
+    <div class="stat-item reveal reveal-delay-3">
+      <span class="stat-num">2X</span>
+      <span class="stat-label">Crecimiento running clubs en 3 años</span>
+      <div class="stat-sub">Social Run, Coffee Rave, NRC…</div>
+    </div>
+  </div>
+</div>
+
+<!-- MERCADO -->
+<section id="mercado">
+  <div class="section-label reveal">Lo que ya funciona</div>
+  <div class="section-title reveal reveal-delay-1">TENDENCIAS<br>DEL <span class="accent">MERCADO</span></div>
+  <p class="section-desc reveal reveal-delay-2">Estas son las fuerzas que BIGG puede capturar y amplificar. Cada una es una palanca de negocio que ya tiene demanda probada en Madrid.</p>
+
+  <div class="trends-grid">
+    <div class="trend-card reveal">
+      <div class="trend-number">01 / 06</div>
+      <div class="trend-icon">🏃</div>
+      <div class="trend-title">Social Run Culture</div>
+      <div class="trend-desc">Los runs sociales han explotado. Nike Running Club, Adidas Runners, clubes independientes. La gente corre para pertenecer, no solo para quemar calorías. La identidad supera al rendimiento.</div>
+      <span class="trend-tag">Comunidad</span>
+    </div>
+    <div class="trend-card reveal reveal-delay-1">
+      <div class="trend-number">02 / 06</div>
+      <div class="trend-icon">☕</div>
+      <div class="trend-title">Coffee Rave & Morning Run</div>
+      <div class="trend-desc">Madrugada + música + café post-run. Altísima viralidad. Atrae el perfil más valioso: 25-40, urbano, con renta. El formato más compartible del mundo del fitness hoy.</div>
+      <span class="trend-tag">Viral</span>
+    </div>
+    <div class="trend-card reveal reveal-delay-2">
+      <div class="trend-number">03 / 06</div>
+      <div class="trend-icon">🏋️</div>
+      <div class="trend-title">Hyrox & Fitness Racing</div>
+      <div class="trend-desc">BIGG ya entrena atletas para Hyrox. El running estructurado es la extensión natural: misma mentalidad de rendimiento, mayor volumen de mercado, más accesibilidad de entrada.</div>
+      <span class="trend-tag">Ya en BIGG</span>
+    </div>
+    <div class="trend-card reveal">
+      <div class="trend-number">04 / 06</div>
+      <div class="trend-icon">📱</div>
+      <div class="trend-title">Tracking & Gamificación</div>
+      <div class="trend-desc">Garmin, Strava, Whoop. El corredor moderno mide todo. Una vertical con seguimiento, retos y progresión visible crea adhesión, reduce el churn y aumenta el ticket.</div>
+      <span class="trend-tag">Retención</span>
+    </div>
+    <div class="trend-card reveal reveal-delay-1">
+      <div class="trend-number">05 / 06</div>
+      <div class="trend-icon">🎯</div>
+      <div class="trend-title">Race Training Programs</div>
+      <div class="trend-desc">10K, 21K, 42K, Trails. La demanda de preparación específica para carreras es masiva y apenas está cubierta con calidad en Madrid. Hay un espacio enorme y vacío esperando.</div>
+      <span class="trend-tag">Monetizable</span>
+    </div>
+    <div class="trend-card reveal reveal-delay-2">
+      <div class="trend-number">06 / 06</div>
+      <div class="trend-icon">⚡</div>
+      <div class="trend-title">Performance + Fuerza Aplicada</div>
+      <div class="trend-desc">Los mejores runners del mundo integran fuerza. El gap entre el club social y la preparación real lo cubre BIGG con su infraestructura existente. Nadie más puede hacer esto.</div>
+      <span class="trend-tag">Diferencial</span>
+    </div>
+  </div>
+</section>
+
+<!-- GAP -->
+<section id="gap">
+  <div class="section-label reveal">Posicionamiento</div>
+  <div class="section-title reveal reveal-delay-1">EL GAP QUE<br>BIGG <span class="accent">LIDERA</span></div>
+  <p class="section-desc reveal reveal-delay-2">El mercado ofrece comunidad o entrenamiento. Nunca los dos con estructura, seguimiento, integración con fuerza y experiencia premium. Ese espacio es de BIGG.</p>
+
+  <div class="comparison-grid reveal">
+    <div class="comp-col">
+      <div class="comp-col-label">Competencia</div>
+      <div class="comp-col-title">Running Clubs Sociales</div>
+      <div class="comp-item"><span class="ci">✅</span> Comunidad y pertenencia</div>
+      <div class="comp-item"><span class="ci">✅</span> Entretenimiento</div>
+      <div class="comp-item"><span class="ci">✅</span> Contenido y redes</div>
+      <div class="comp-item"><span class="ci">❌</span> Sin planificación real</div>
+      <div class="comp-item"><span class="ci">❌</span> Sin fuerza aplicada</div>
+      <div class="comp-item"><span class="ci">❌</span> Sin seguimiento</div>
+      <div class="comp-item"><span class="ci">❌</span> Sin objetivo medible</div>
+    </div>
+    <div class="comp-col featured">
+      <div class="comp-col-label">La solución</div>
+      <div class="comp-col-title">BIGG Running Club</div>
+      <div class="comp-item"><span class="ci">✅</span> Comunidad premium</div>
+      <div class="comp-item"><span class="ci">✅</span> Planificación mensual</div>
+      <div class="comp-item"><span class="ci">✅</span> Fuerza integrada</div>
+      <div class="comp-item"><span class="ci">✅</span> App y seguimiento</div>
+      <div class="comp-item"><span class="ci">✅</span> Social runs + Coffee Rave</div>
+      <div class="comp-item"><span class="ci">✅</span> Objetivo real (5K → 42K)</div>
+      <div class="comp-item"><span class="ci">✅</span> Eventos y carreras</div>
+      <div class="comp-badge">La solución completa</div>
+    </div>
+    <div class="comp-col">
+      <div class="comp-col-label">Competencia</div>
+      <div class="comp-col-title">Coaching Individual</div>
+      <div class="comp-item"><span class="ci">✅</span> Plan estructurado</div>
+      <div class="comp-item"><span class="ci">✅</span> Seguimiento técnico</div>
+      <div class="comp-item"><span class="ci">❌</span> Sin comunidad</div>
+      <div class="comp-item"><span class="ci">❌</span> Sin cultura de marca</div>
+      <div class="comp-item"><span class="ci">❌</span> Sin experiencia grupal</div>
+      <div class="comp-item"><span class="ci">❌</span> Alto costo por acceso</div>
+      <div class="comp-item"><span class="ci">❌</span> Escala limitada</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTO -->
+<section id="producto">
+  <div class="section-label reveal">El producto</div>
+  <div class="section-title reveal reveal-delay-1">UN SISTEMA <span class="accent">PREMIUM</span><br>NO UNA CLASE MÁS</div>
+  <p class="section-desc reveal reveal-delay-2">BIGG no vende salidas a correr. Vende un sistema para personas que quieren entrenar con objetivo real.</p>
+
+  <div class="product-layout">
+    <div class="pillar-list reveal">
+      <div class="pillar-item">
+        <div class="pillar-num">01</div>
+        <div class="pillar-content">
+          <div class="pillar-title">Running Estructurado</div>
+          <div class="pillar-desc">Planificación mensual por nivel y objetivo: 5K, 10K, 15K, 21K, 42K y trail. Técnica, ritmo, calidad y fondo. Sin improvisar.</div>
+        </div>
+      </div>
+      <div class="pillar-item">
+        <div class="pillar-num">02</div>
+        <div class="pillar-content">
+          <div class="pillar-title">Fuerza Aplicada</div>
+          <div class="pillar-desc">Integración real con el ecosistema BIGG. Prevención, potencia y rendimiento. Lo que ya funciona con Hyrox, aplicado al running.</div>
+        </div>
+      </div>
+      <div class="pillar-item">
+        <div class="pillar-num">03</div>
+        <div class="pillar-content">
+          <div class="pillar-title">App + Seguimiento</div>
+          <div class="pillar-desc">Adherencia, asistencia, kilómetros acumulados, retos colectivos y progreso hacia la carrera objetivo. Todo visible y medible.</div>
+        </div>
+      </div>
+      <div class="pillar-item">
+        <div class="pillar-num">04</div>
+        <div class="pillar-content">
+          <div class="pillar-title">Comunidad + Eventos</div>
+          <div class="pillar-desc">Social runs semanales, Coffee Rave de marca, fondos del sábado, participación en carreras oficiales. Pertenencia que genera contenido.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-right reveal reveal-delay-2">
+      <div class="product-system">
+        <div class="system-title">EL SISTEMA BIGG RUNNING</div>
+        <div class="system-cycle">
+          <div class="cycle-node">
+            <div class="cycle-emoji">📋</div>
+            <div class="cycle-label">Evaluar</div>
+          </div>
+          <div class="cycle-node">
+            <div class="cycle-emoji">📅</div>
+            <div class="cycle-label">Planificar</div>
+          </div>
+          <div class="cycle-node">
+            <div class="cycle-emoji">🏃</div>
+            <div class="cycle-label">Entrenar</div>
+          </div>
+          <div class="cycle-node">
+            <div class="cycle-emoji">🏅</div>
+            <div class="cycle-label">Competir</div>
+          </div>
+        </div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--lime);margin-bottom:12px;">Estructura semanal</div>
+        <div class="weekly-grid">
+          <div class="day-node">
+            <div class="day-label">MAR</div>
+            <div class="day-type">Técnica</div>
+          </div>
+          <div class="day-node">
+            <div class="day-label">JUE</div>
+            <div class="day-type">Ritmo</div>
+          </div>
+          <div class="day-node" style="background:rgba(217,255,99,0.08);">
+            <div class="day-label">SAB</div>
+            <div class="day-type">Social Run ☕</div>
+          </div>
+        </div>
+        <div style="margin-top:20px;padding:16px;background:rgba(217,255,99,0.06);border:1px solid var(--border);font-size:12px;color:rgba(245,245,240,0.5);line-height:1.6;">
+          🏠 <strong style="color:var(--lime)">Sede Alcalá</strong> como hub inicial — cercanía con el Retiro, guardado de pertenencias, salida exterior y experiencia de marca completa.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRECIOS -->
+<section id="precios">
+  <div class="section-label reveal">Arquitectura comercial</div>
+  <div class="section-title reveal reveal-delay-1">ESCALA SIN<br><span class="accent">DEVALUAR</span></div>
+  <p class="section-desc reveal reveal-delay-2">Tres niveles que captan nuevos clientes, generan upsell para socios existentes y ofrecen un tier premium de alto margen.</p>
+
+  <div class="pricing-grid">
+    <div class="price-card reveal">
+      <div class="price-tier">Captación</div>
+      <div class="price-name">Running Membership</div>
+      <div class="price-amount">69<span style="font-size:40px">€</span></div>
+      <div class="price-period">al mes · acceso independiente</div>
+      <div class="price-divider"></div>
+      <div class="price-feature"><div class="pf-dot"></div>2 sesiones semanales de running</div>
+      <div class="price-feature"><div class="pf-dot"></div>Fondo del sábado (Social Run Coffee)</div>
+      <div class="price-feature"><div class="pf-dot"></div>Planificación mensual por objetivo</div>
+      <div class="price-feature"><div class="pf-dot"></div>Retos y comunidad en app</div>
+      <div class="price-feature"><div class="pf-dot"></div>Prioridad en eventos del club</div>
+    </div>
+
+    <div class="price-card featured reveal reveal-delay-1">
+      <div class="featured-badge">Más estratégico</div>
+      <div class="price-tier">Upsell para socios BIGG</div>
+      <div class="price-name">Running Add-On</div>
+      <div class="price-amount">29<span style="font-size:40px">€</span></div>
+      <div class="price-period">al mes · sobre membresía 149€</div>
+      <div class="price-divider"></div>
+      <div class="price-feature"><div class="pf-dot"></div>Acceso al plan running completo</div>
+      <div class="price-feature"><div class="pf-dot"></div>Integración total con fuerza BIGG</div>
+      <div class="price-feature"><div class="pf-dot"></div>Fondos, retos y carrera objetivo</div>
+      <div class="price-feature"><div class="pf-dot"></div>Mayor valor percibido de la cuota</div>
+      <div class="price-feature"><div class="pf-dot"></div>El upsell ideal sin fricción</div>
+    </div>
+
+    <div class="price-card reveal reveal-delay-2">
+      <div class="price-tier">Premium · Alto margen</div>
+      <div class="price-name">Running Performance</div>
+      <div class="price-amount">99<span style="font-size:40px">€</span></div>
+      <div class="price-period">al mes · programa de élite</div>
+      <div class="price-divider"></div>
+      <div class="price-feature"><div class="pf-dot"></div>Todo lo incluido en Membership</div>
+      <div class="price-feature"><div class="pf-dot"></div>Test y evaluación inicial</div>
+      <div class="price-feature"><div class="pf-dot"></div>Seguimiento quincenal 1:1</div>
+      <div class="price-feature"><div class="pf-dot"></div>Clínicas técnicas exclusivas</div>
+      <div class="price-feature"><div class="pf-dot"></div>Nutrición, mentalidad y preparación</div>
+    </div>
+  </div>
+</section>
+
+<!-- EVENTO -->
+<section id="evento">
+  <div class="section-label reveal">Lanzamiento</div>
+  <div class="section-title reveal reveal-delay-1">BIGG RUN<br><span class="accent">EXPERIENCE</span></div>
+  <p class="section-desc reveal reveal-delay-2">El evento que convierte Madrid en territorio BIGG. No es una carrera. Es una experiencia de marca que genera comunidad, contenido y conversión desde el día uno.</p>
+
+  <div class="route-strip reveal">
+    <div class="route-line-visual"></div>
+    <div class="route-stops">
+      <div class="route-stop">
+        <div class="stop-dot"></div>
+        <div class="stop-num">01</div>
+        <div class="stop-name">Orense</div>
+        <div class="stop-role">Salida oficial</div>
+        <div class="stop-desc">Check-in, bienvenida, foto de grupo y activación general de la comunidad BIGG.</div>
+      </div>
+      <div class="route-stop">
+        <div class="stop-dot"></div>
+        <div class="stop-num">02</div>
+        <div class="stop-name">Chamberí</div>
+        <div class="stop-role">Checkpoint 1</div>
+        <div class="stop-desc">Bloque de coordinación, técnica de carrera y primera narrativa de progreso colectivo.</div>
+      </div>
+      <div class="route-stop">
+        <div class="stop-dot"></div>
+        <div class="stop-num">03</div>
+        <div class="stop-name">Chueca</div>
+        <div class="stop-role">Checkpoint 2</div>
+        <div class="stop-desc">Core y fuerza funcional. Activación social y contenido de marca. Máxima energía.</div>
+      </div>
+      <div class="route-stop">
+        <div class="stop-dot"></div>
+        <div class="stop-num">04</div>
+        <div class="stop-name">Retiro</div>
+        <div class="stop-role">Checkpoint 3</div>
+        <div class="stop-desc">El tramo más emocional. Pieza central de la experiencia running. Icónico y altamente compartible.</div>
+      </div>
+      <div class="route-stop">
+        <div class="stop-dot"></div>
+        <div class="stop-num">05</div>
+        <div class="stop-name">Alcalá</div>
+        <div class="stop-role">Llegada premium</div>
+        <div class="stop-desc">Recovery, coffee, nutrición deportiva, psicología y CTA a membresía. Cierre de experiencia.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="evento-bottom">
+    <div class="evento-card reveal">
+      <div class="evento-card-title">Cierre en Alcalá</div>
+      <ul class="evento-list">
+        <li>Charla de nutrición deportiva aplicada al running</li>
+        <li>Sesión de psicología deportiva y rendimiento mental</li>
+        <li>Recovery activo + social coffee networking</li>
+        <li>CTA comercial para membresía y prueba del producto</li>
+        <li>Contenido de marca para redes desde el primer día</li>
+      </ul>
+    </div>
+    <div class="evento-card reveal reveal-delay-1">
+      <div class="evento-card-title">Objetivo del evento</div>
+      <ul class="evento-list">
+        <li>Generar contenido orgánico y paid-ready de alta calidad</li>
+        <li>Atraer nuevos clientes al ecosistema BIGG</li>
+        <li>Dar prueba real del producto a escala</li>
+        <li>Activar comunidad y base de datos desde el día 1</li>
+        <li>Posicionar a BIGG como marca de running premium en Madrid</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+  <div class="section-label reveal">Implementación</div>
+  <div class="section-title reveal reveal-delay-1">DE PILOTO A<br><span class="accent">CATEGORÍA LÍDER</span></div>
+  <p class="section-desc reveal reveal-delay-2">El mejor camino es lanzar en formato controlado, medir, optimizar y escalar. Tres fases claras, métricas en cada una.</p>
+
+  <div class="roadmap-grid">
+    <div class="phase-card reveal">
+      <div class="phase-tag">FASE 01</div>
+      <div class="phase-period">Semanas 1 – 12</div>
+      <div class="phase-title">Piloto Alcalá</div>
+      <div class="phase-item"><div class="phase-item-dot"></div>Lanzamiento controlado en sede Alcalá</div>
+      <div class="phase-item"><div class="phase-item-dot"></div>8-12 semanas de validación del producto</div>
+      <div class="phase-item"><div class="phase-item-dot"></div>Validar demanda, operación y pricing</div>
+      <div class="phase-item"><div class="phase-item-dot"></div>Primer Social Run + Coffee Rave BIGG</div>
+      <div class="phase-item"><div class="phase-item-dot"></div>Generar comunidad base y contenido orgánico</div>
+    </div>
+    <div class="phase-card reveal reveal-delay-1">
+      <div class="phase-tag">FASE 02</div>
+      <div class="phase-period">Mes 3 – 6</div>
+      <div class="phase-title">Consolidación</div>
+      <div class="phase-item"><div class="phase-item-dot"></div>Membresías formales activas (3 tiers)</div>
+      <div class="phase-item"><div class="phase-item-dot"></div>Retos digitales en app y gamificación</div>
+      <div class="phase-item"><div class="phase-item-dot"></div>Workshops, clínicas y eventos calendarizados</div>
+      <div class="phase-item"><div class="phase-item-dot"></div>Participación en primera carrera oficial</div>
+      <div class="phase-item"><div class="phase-item-dot"></div>Expansión del programa semanal</div>
+    </div>
+    <div class="phase-card reveal reveal-delay-2">
+      <div class="phase-tag">FASE 03</div>
+      <div class="phase-period">Mes 6 – 12</div>
+      <div class="phase-title">Escala de marca</div>
+      <div class="phase-item"><div class="phase-item-dot"></div>Replicación en otras sedes BIGG Madrid</div>
+      <div class="phase-item"><div class="phase-item-dot"></div>Creación del BIGG Race Team oficial</div>
+      <div class="phase-item"><div class="phase-item-dot"></div>Posicionamiento en carreras top de España</div>
+      <div class="phase-item"><div class="phase-item-dot"></div>Colaboración con marcas deportivas</div>
+      <div class="phase-item"><div class="phase-item-dot"></div>BIGG como referencia nacional en running premium</div>
+    </div>
+  </div>
+</section>
+
+<!-- NEGOCIO -->
+<section id="negocio">
+  <div class="section-label reveal">Modelo de negocio</div>
+  <div class="section-title reveal reveal-delay-1">IMPACTO EN<br><span class="accent">EL NEGOCIO</span></div>
+  <p class="section-desc reveal reveal-delay-2">BIGG Running Club no solo mejora la propuesta de valor. Abre una línea de ingresos, aumenta la retención y eleva el posicionamiento de la marca entera.</p>
+
+  <div class="biz-grid">
+    <div class="biz-card reveal">
+      <div class="biz-card-label">Ingresos</div>
+      <div class="biz-card-title">Nuevas capas de monetización</div>
+      <ul class="biz-list">
+        <li>Membresía running only · 69€/mes</li>
+        <li>Add-on para socios BIGG · +29€/mes</li>
+        <li>Performance program · 99€/mes</li>
+        <li>Workshops y clínicas especializadas</li>
+        <li>Eventos pagos y activaciones de marca</li>
+      </ul>
+    </div>
+    <div class="biz-card dark reveal reveal-delay-1">
+      <div class="biz-card-label">Retención + LTV</div>
+      <div class="biz-card-title">El usuario con objetivo dura más</div>
+      <ul class="biz-list">
+        <li>Mayor adherencia y frecuencia de uso</li>
+        <li>Vínculo emocional con la marca BIGG</li>
+        <li>Más motivos para renovar y recomendar</li>
+        <li>Reducción del churn en clientes premium</li>
+        <li>Acceso a carreras como ancla de permanencia</li>
+      </ul>
+    </div>
+    <div class="biz-card reveal">
+      <div class="biz-card-label">Posicionamiento</div>
+      <div class="biz-card-title">BIGG como referencia premium ES</div>
+      <ul class="biz-list">
+        <li>Entrenamiento con propósito y objetivo real</li>
+        <li>Presencia en carreras oficiales de Madrid</li>
+        <li>Comunidad activa, visible y generadora de contenido</li>
+        <li>Atracción del mejor perfil de cliente: activo, aspiracional</li>
+        <li>Diferenciación sostenida frente a la competencia</li>
+      </ul>
+    </div>
+    <div class="biz-card dark reveal reveal-delay-1">
+      <div class="biz-card-label">Captación</div>
+      <div class="biz-card-title">Nueva puerta de entrada al ecosistema</div>
+      <ul class="biz-list">
+        <li>Capta corredores que no comprarían membresía full</li>
+        <li>Los convierte en socios completos con el tiempo</li>
+        <li>El evento de lanzamiento genera leads calificados</li>
+        <li>El Social Run semanal actúa como prueba gratuita</li>
+        <li>Contenido orgánico continuo como canal de adquisición</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="kpi-strip" style="margin-top:2px;">
+    <div class="kpi-card reveal">
+      <div class="kpi-title">Adquisición</div>
+      <div class="kpi-item">Altas nuevas por Running Membership</div>
+      <div class="kpi-item">Conversión de eventos a membresía</div>
+      <div class="kpi-item">Leads generados por comunidad</div>
+    </div>
+    <div class="kpi-card reveal reveal-delay-1">
+      <div class="kpi-title">Valor</div>
+      <div class="kpi-item">Upgrade de socios actuales (%)</div>
+      <div class="kpi-item">Ingreso incremental mensual</div>
+      <div class="kpi-item">Ticket promedio usuario running</div>
+    </div>
+    <div class="kpi-card reveal reveal-delay-2">
+      <div class="kpi-title">Retención</div>
+      <div class="kpi-item">Asistencia media semanal</div>
+      <div class="kpi-item">Tasa de renovación trimestral</div>
+      <div class="kpi-item">Participación en carreras BIGG</div>
+    </div>
+    <div class="kpi-card reveal reveal-delay-3">
+      <div class="kpi-title">Marca</div>
+      <div class="kpi-item">Menciones y contenido orgánico</div>
+      <div class="kpi-item">Seguidores comunidad running</div>
+      <div class="kpi-item">NPS del programa</div>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING -->
+<section id="cierre">
+  <div class="closing-inner">
+    <div class="closing-label reveal">Conclusión</div>
+    <div class="closing-title reveal reveal-delay-1">
+      BIGG NO<br>NECESITA<br>UNA ACTIVIDAD.<br>NECESITA<br>UNA CATEGORÍA.
+    </div>
+    <p class="closing-body reveal reveal-delay-2">
+      Este proyecto convierte a BIGG en algo más grande que un gimnasio: un sistema donde las personas se preparan, evolucionan, compiten, pertenecen y construyen una relación duradera con la marca.
+    </p>
+    <div class="closing-points reveal reveal-delay-3">
+      <div class="closing-point">Running premium estructurado en Madrid</div>
+      <div class="closing-point">Social Run + Coffee Rave con identidad BIGG</div>
+      <div class="closing-point">Fuerza aplicada desde el ecosistema existente</div>
+      <div class="closing-point">App, seguimiento y comunidad gamificada</div>
+      <div class="closing-point">Eventos, carreras y posicionamiento nacional</div>
+      <div class="closing-point">Nueva vertical de ingresos escalable</div>
+    </div>
+    <div class="final-statement reveal reveal-delay-4">
+      La oportunidad no es vender running.<br>
+      Es posicionar a BIGG como el lugar premium<br>
+      donde la gente entrena para lograr algo real.
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">BIGG Running Club · Propuesta Estratégica 2025</div>
+  <div class="footer-note">Documento confidencial · BIGG España</div>
+</footer>
+
+<script>
+// ── CURSOR
+const cursor = document.getElementById('cursor');
+let mouseX = 0, mouseY = 0;
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX; mouseY = e.clientY;
+  cursor.style.left = mouseX + 'px';
+  cursor.style.top = mouseY + 'px';
+});
+document.querySelectorAll('a, button, .trend-card, .comp-col, .price-card, .phase-card, .pillar-item').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('expand'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('expand'));
+});
+
+// ── LOADER
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hidden');
+  }, 2200);
+});
+
+// ── NAV SCROLL
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ── REVEAL OBSERVER
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── COUNTER ANIMATION
+function animateCounter(el, target, suffix = '') {
+  let start = 0;
+  const duration = 2000;
+  const step = timestamp => {
+    if (!start) start = timestamp;
+    const progress = Math.min((timestamp - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.floor(eased * target) + suffix;
+    if (progress < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+const counterObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const nums = entry.target.querySelectorAll('.stat-num');
+      const data = [
+        { val: 4, suffix: 'M+' },
+        { val: 3, suffix: '#' , pre: '#' },
+        { val: 80, suffix: '%' },
+        { val: 2, suffix: 'X' },
+      ];
+      nums.forEach((n, i) => {
+        if (data[i]) {
+          if (data[i].pre) {
+            n.textContent = '#3';
+          } else {
+            animateCounter(n, data[i].val, data[i].suffix);
+          }
+        }
+      });
+      counterObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+const statsSection = document.getElementById('stats');
+if (statsSection) counterObserver.observe(statsSection);
+</script>
+</body>
+</html>
